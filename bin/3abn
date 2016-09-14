@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+"use strict";
+
+const ThreeABN = require("../lib")
+    , Tilda = require("tilda")
+    , Logger = require("bug-killer")
+    , Diable = require("diable")
+    ;
+
+new Tilda(`${__dirname}/../package.json`, {
+    options: [
+        {
+            opts: ["d", "daemon"]
+          , desc: "If provided, the process will run in background."
+          , type: Boolean
+        }
+    ]
+}).main(a => {
+
+    if (a.options.daemon.value && !Diable.isDaemon()) {
+        Diable({
+            exit: false
+        });
+        return setTimeout(process.exit, 1000);
+    }
+
+    var pl = ThreeABN();
+    pl.on("playing", console.log);
+    pl.on("playend", console.log);
+    pl.on("error", console.log);
+});

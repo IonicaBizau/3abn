@@ -1,21 +1,45 @@
 {
-  "name": "live365",
+  "name": "3abn",
   "version": "1.0.0",
-  "description": "Stream live365 radios on your computer and speakers!",
+  "description": "A 3ABN radio client in the terminal.",
   "main": "lib/index.js",
-  "bin": {
-      "live365": "./bin/live365"
-  },
   "dependencies": {
-    "clp": "^3.0.0",
-    "diable": "^1.3.0",
-    "player": "^0.5.0",
-    "ul": "^5.0.0"
+    "bug-killer": "^4.2.3",
+    "clp": "^3.2.1",
+    "diable": "^1.4.0",
+    "player": "^0.5.1",
+    "tilda": "^4.3.1",
+    "ul": "^5.2.2"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "KINDLY"
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/IonicaBizau/3abn.git"
+  },
+  "keywords": [
+    "3abn",
+    "radio",
+    "cli"
+  ],
+  "author": "Ionică Bizău <bizauionica@gmail.com> (http://ionicabizau.net)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IonicaBizau/3abn/issues"
+  },
+  "homepage": "https://github.com/IonicaBizau/3abn#readme",
+  "files": [
+    "bin/",
+    "app/",
+    "lib/",
+    "dist/",
+    "src/",
+    "resources/",
+    "menu/",
+    "scripts/",
+    "cli.js",
+    "index.js"
+  ]
 }
