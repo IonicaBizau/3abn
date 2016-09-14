@@ -41,5 +41,8 @@
     "scripts/",
     "cli.js",
     "index.js"
-  ]
+  ],
+  "bin": {
+    "3abn": "./bin/3abn"
+  }
 }
