@@ -44,5 +44,8 @@
   ],
   "bin": {
     "3abn": "./bin/3abn"
+  },
+  "blah": {
+    "description": "This project uses the media stream from [this page](http://3abn.org/media/3abn-radio-broadcast/3abn-music-channel/). You can listen to it in the browser as well."
   }
 }
