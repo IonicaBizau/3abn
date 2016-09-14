@@ -2,7 +2,7 @@
 
 "use strict";
 
-const ThreeABN = require("../lib")
+const threeABN = require("../lib")
     , Tilda = require("tilda")
     , Logger = require("bug-killer")
     , Diable = require("diable")
@@ -25,8 +25,23 @@ new Tilda(`${__dirname}/../package.json`, {
         return setTimeout(process.exit, 1000);
     }
 
-    var pl = ThreeABN();
-    pl.on("playing", console.log);
-    pl.on("playend", console.log);
-    pl.on("error", console.log);
+    Logger.log("                   !");
+    Logger.log("     3ABN Radio    |");
+    Logger.log("     Music Channel |    |~/");
+    Logger.log("                   |   _|~");
+    Logger.log("     .============.|  (_|   |~/");
+    Logger.log("   .-;____________;|.      _|~");
+    Logger.log("   | [_________I__] |     (_|");
+    Logger.log("   |  \"\"\"\"\" (_) (_) |");
+    Logger.log("   | .=====..=====. |");
+    Logger.log("   | |:::::||:::::| |");
+    Logger.log("   | '=====''=====' |");
+    Logger.log("   '----------------'");
+    Logger.log("Connecting...");
+
+    threeABN()
+      .on("playing", () => Logger.log("Playing..."))
+      .on("playend", () => Logger.log("Ended."))
+      .on("error", err => Logger.log(err, "error"))
+      ;
 });
