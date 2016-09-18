@@ -6,7 +6,28 @@ const threeABN = require("../lib")
     , Tilda = require("tilda")
     , Logger = require("bug-killer")
     , Diable = require("diable")
+    , CliUpdate = require("cli-update")
+    , CliBox = require("cli-box")
+    , couleurs = require("couleurs")
+    , cliResize = require("cli-resize")
     ;
+
+const ASCII_ART = " ________________________________"
+              + "\n(                                )"
+              + "\n(                   !            )"
+              + "\n(     3ABN Radio    |            )"
+              + "\n(     Music Channel |    |~/     )"
+              + "\n(                   |   _|~      )"
+              + "\n(     .============.|  (_|   |~/ )"
+              + "\n(   .-;____________;|.      _|~  )"
+              + "\n(   | [_________I__] |     (_|   )"
+              + "\n(   |  \"\"\"\"\" (_) (_) |           )"
+              + "\n(   | .=====..=====. |           )"
+              + "\n(   | |:::::||:::::| |           )"
+              + "\n(   | '=====''=====' |           )"
+              + "\n(   '----------------'           )"
+              + "\n(________________________________)\n"
+              ;
 
 new Tilda(`${__dirname}/../package.json`, {
     options: [
@@ -25,23 +46,43 @@ new Tilda(`${__dirname}/../package.json`, {
         return setTimeout(process.exit, 1000);
     }
 
-    Logger.log("                   !");
-    Logger.log("     3ABN Radio    |");
-    Logger.log("     Music Channel |    |~/");
-    Logger.log("                   |   _|~");
-    Logger.log("     .============.|  (_|   |~/");
-    Logger.log("   .-;____________;|.      _|~");
-    Logger.log("   | [_________I__] |     (_|");
-    Logger.log("   |  \"\"\"\"\" (_) (_) |");
-    Logger.log("   | .=====..=====. |");
-    Logger.log("   | |:::::||:::::| |");
-    Logger.log("   | '=====''=====' |");
-    Logger.log("   '----------------'");
-    Logger.log("Connecting...");
+    let render = () => {
+        let content = ""
+          , boxOpts = {
+                fullscreen: true
+            }
+          ;
 
-    threeABN()
-      .on("playing", () => Logger.log("Playing..."))
-      .on("playend", () => Logger.log("Ended."))
-      .on("error", err => Logger.log(err, "error"))
-      ;
+        if (player.songInfo) {
+            let playlist = player.songInfo.playlist
+              , howManyToShow = CliUpdate.rows - 5;
+              ;
+
+            boxOpts.hAlign = "left";
+            boxOpts.vAlign = "bottom";
+            content = playlist.slice(-howManyToShow).map(c => `${c.date.format("HH:mm")} - ${c.title}`).join("\n");
+            content += "\n" + "-".repeat(CliUpdate.columns - 2);
+            content += "\n> " + player.songInfo.playing;
+
+            if (playlist.length < CliUpdate.rows) {
+
+                content = "3ABN Radio Music Channel | 3abn.org | Terminal client by @IonicaBizau (twitter.com/IonicaBizau) | ♩ ♪ ♫ ♬ ♪ ♫\n" + ("-".repeat(CliUpdate.columns - 2)) + "\n" + content;
+            }
+        } else {
+            content = ASCII_ART + (player.is_playing ? "Playing": "Connecting") + "...";
+        }
+
+        CliUpdate.render(CliBox(boxOpts, content));
+    };
+
+
+    let player = new threeABN()
+                  .on("playing", render)
+                  .on("song_changed", render)
+                  .on("playend", () => Logger.log("Ended.", "warn"))
+                  .on("error", err => Logger.log(err, "error"))
+                  ;
+
+    render();
+    cliResize(render);
 });

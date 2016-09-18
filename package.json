@@ -5,9 +5,17 @@
   "main": "lib/index.js",
   "dependencies": {
     "bug-killer": "^4.2.3",
+    "cli-box": "^6.0.3",
+    "cli-resize": "^2.0.0",
+    "cli-update": "^3.2.0",
     "clp": "^3.2.1",
+    "couleurs": "^6.0.3",
+    "daty": "^1.0.5",
     "diable": "^1.4.0",
+    "html-encoder-decoder": "^1.3.0",
+    "page-changed": "^2.0.0",
     "player": "^0.5.1",
+    "scrape-it": "^3.2.0",
     "tilda": "^4.3.1",
     "ul": "^5.2.2"
   },
