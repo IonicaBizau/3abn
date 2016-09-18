@@ -1,6 +1,6 @@
 {
   "name": "3abn",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A 3ABN radio client in the terminal.",
   "main": "lib/index.js",
   "dependencies": {
