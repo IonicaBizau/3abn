@@ -12,3 +12,9 @@ Streams audio from `3abn.org`.
 #### Return
 - **Player** The `Player` instance (see the `player` npm package).
 
+### `playlistInfo(cb)`
+Get the playlist information.
+
+#### Params
+- **Function** `cb`: The callback function.
+
