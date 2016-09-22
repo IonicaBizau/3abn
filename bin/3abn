@@ -10,6 +10,8 @@ const threeABN = require("../lib")
     , CliBox = require("cli-box")
     , couleurs = require("couleurs")
     , cliResize = require("cli-resize")
+    , keypress = require("keypress")
+    , ctrlC = require("ctrl-c")
     ;
 
 const ASCII_ART = " ________________________________"
@@ -46,6 +48,21 @@ new Tilda(`${__dirname}/../package.json`, {
         return setTimeout(process.exit, 1000);
     }
 
+
+    if (!a.options.daemon.value) {
+        keypress(process.stdin);
+        process.stdin.on("keypress", (ch, key) => {
+            if (ch.toUpperCase() === "L") {
+                player.likeCurrentSong();
+                render();
+            }
+        });
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+        ctrlC(false);
+    }
+
+
     let render = () => {
         let content = ""
           , boxOpts = {
@@ -62,11 +79,10 @@ new Tilda(`${__dirname}/../package.json`, {
             boxOpts.vAlign = "bottom";
             content = playlist.slice(-howManyToShow).map(c => `${c.date.format("HH:mm")} - ${c.title}`).join("\n");
             content += "\n" + "-".repeat(CliUpdate.columns - 2);
-            content += "\n> " + player.songInfo.playing;
+            content += `\n> ${player.songInfo.playing} ${player.liked_current_song ? "[❤]" : ""}`;
 
             if (playlist.length < CliUpdate.rows) {
-
-                content = "3ABN Radio Music Channel | 3abn.org | Terminal client by @IonicaBizau (twitter.com/IonicaBizau) | ♩ ♪ ♫ ♬ ♪ ♫\n" + ("-".repeat(CliUpdate.columns - 2)) + "\n" + content;
+                content = "Shortcuts: L (like current song)\n3ABN Radio Music Channel | 3abn.org | Terminal client by @IonicaBizau (twitter.com/IonicaBizau) | ♩ ♪ ♫ ♬ ♪ ♫\n" + ("-".repeat(CliUpdate.columns - 2)) + "\n" + content;
             }
         } else {
             content = ASCII_ART + (player.is_playing ? "Playing": "Connecting") + "...";
@@ -86,3 +102,5 @@ new Tilda(`${__dirname}/../package.json`, {
     render();
     cliResize(render);
 });
+
+
