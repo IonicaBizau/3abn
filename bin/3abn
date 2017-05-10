@@ -52,7 +52,7 @@ new Tilda(`${__dirname}/../package.json`, {
     if (!a.options.daemon.value) {
         keypress(process.stdin);
         process.stdin.on("keypress", (ch, key) => {
-            if (ch.toUpperCase() === "L") {
+            if (ch && ch.toUpperCase() === "L") {
                 player.likeCurrentSong();
                 render();
             }
