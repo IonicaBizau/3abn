@@ -1,6 +1,6 @@
 {
   "name": "3abn",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "description": "A 3ABN radio client in the terminal.",
   "main": "lib/index.js",
   "dependencies": {
@@ -53,7 +53,10 @@
     "resources/",
     "menu/",
     "cli.js",
-    "index.js"
+    "index.js",
+    "bloggify.js",
+    "bloggify.json",
+    "bloggify/"
   ],
   "bin": {
     "3abn": "./bin/3abn"
