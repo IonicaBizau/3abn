@@ -14,6 +14,9 @@ Streams audio from `3abn.org`.
 #### Return
 - **Player** The `Player` instance (see the `player` npm package).
 
+### `play()`
+Play the live stream.
+
 ### `playlistInfo(cb)`
 Get the playlist information.
 
