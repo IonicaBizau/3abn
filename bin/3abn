@@ -2,103 +2,81 @@
 
 "use strict";
 
-const threeABN = require("../lib")
+const ThreeAbn = require("../lib")
     , Tilda = require("tilda")
     , Logger = require("bug-killer")
     , Diable = require("diable")
     , CliUpdate = require("cli-update")
     , CliBox = require("cli-box")
-    , couleurs = require("couleurs")
     , cliResize = require("cli-resize")
-    , keypress = require("keypress")
-    , ctrlC = require("ctrl-c")
     ;
 
-const ASCII_ART = " ________________________________"
-              + "\n(                                )"
-              + "\n(                   !            )"
-              + "\n(     3ABN Radio    |            )"
-              + "\n(     Music Channel |    |~/     )"
-              + "\n(                   |   _|~      )"
-              + "\n(     .============.|  (_|   |~/ )"
-              + "\n(   .-;____________;|.      _|~  )"
-              + "\n(   | [_________I__] |     (_|   )"
-              + "\n(   |  \"\"\"\"\" (_) (_) |           )"
-              + "\n(   | .=====..=====. |           )"
-              + "\n(   | |:::::||:::::| |           )"
-              + "\n(   | '=====''=====' |           )"
-              + "\n(   '----------------'           )"
-              + "\n(________________________________)\n"
-              ;
-
 new Tilda(`${__dirname}/../package.json`, {
-    options: [
-        {
-            opts: ["d", "daemon"]
-          , desc: "If provided, the process will run in background."
-          , type: Boolean
-        }
-    ]
+    options: [{
+        opts: ["d", "daemon"]
+      , desc: "Run in the background."
+      , type: Boolean
+    }]
 }).main(a => {
-
-    if (a.options.daemon.value && !Diable.isDaemon()) {
+    const daemon = a.options.daemon.value;
+    if (daemon && !Diable.isDaemon()) {
         Diable();
         return setTimeout(process.exit, 1000);
     }
 
+    const player = new ThreeAbn();
+    const interactive = !daemon && process.stdin.isTTY;
 
-    if (!a.options.daemon.value) {
-        keypress(process.stdin);
-        process.stdin.on("keypress", (ch, key) => {
-            if (ch && ch.toUpperCase() === "L") {
-                player.likeCurrentSong();
-                render();
-            }
-        });
-        process.stdin.setRawMode(true);
-        process.stdin.resume();
-        ctrlC(false);
-    }
+    function render () {
+        if (daemon) { return; }
 
-
-    let render = () => {
-        let content = ""
-          , boxOpts = {
-                fullscreen: true
-            }
-          ;
+        const width = Math.max(10, CliUpdate.columns - 4)
+            , songs = player.songInfo && player.songInfo.playlist || []
+            , recent = songs.slice(-Math.max(0, CliUpdate.rows - 8))
+            , lines = ["3ABN Radio Music Channel", "─".repeat(width)]
+            ;
 
         if (player.songInfo) {
-            let playlist = player.songInfo.playlist
-              , howManyToShow = CliUpdate.rows - 5;
-              ;
-
-            boxOpts.hAlign = "left";
-            boxOpts.vAlign = "bottom";
-            content = playlist.slice(-howManyToShow).map(c => `${c.date.format("HH:mm")} - ${c.title}`).join("\n");
-            content += "\n" + "-".repeat(CliUpdate.columns - 2);
-            content += `\n> ${player.songInfo.playing} ${player.liked_current_song ? "[❤]" : ""}`;
-
-            if (playlist.length < CliUpdate.rows) {
-                content = "Shortcuts: L (like current song)\n3ABN Radio Music Channel | 3abn.org | Terminal client by @IonicaBizau (twitter.com/IonicaBizau) | ♩ ♪ ♫ ♬ ♪ ♫\n" + ("-".repeat(CliUpdate.columns - 2)) + "\n" + content;
-            }
+            lines.push(...recent.map(song => `${song.date.format("HH:mm")}  ${song.title}`));
+            lines.push("", `Now playing: ${player.songInfo.playing}`);
+            if (player.liked_current_song) { lines.push("♥ Saved to favorites"); }
         } else {
-            content = ASCII_ART + (player.is_playing ? "Playing": "Connecting") + "...";
+            lines.push(player.is_playing ? "Playing — waiting for song information" : "Connecting...");
         }
+        lines.push("", "L save song  •  Q quit");
+        if (process.stdout.isTTY) {
+            CliUpdate.render(CliBox({ fullscreen: true, hAlign: "left", vAlign: "bottom" }, lines.join("\n")));
+        } else {
+            console.log(lines.join("\n"));
+        }
+    }
 
-        CliUpdate.render(CliBox(boxOpts, content));
-    };
+    function quit (code = 0) {
+        if (process.stdin.isRaw) { process.stdin.setRawMode(false); }
+        player.stop();
+        process.exit(code);
+    }
 
+    player.on("playing", render);
+    player.on("song_changed", render);
+    player.on("song_changed_error", err => Logger.log(err, "error"));
+    player.on("error", err => { Logger.log(err, "error"); quit(1); });
+    player.on("playend", () => Logger.log("Playback ended.", "warn"));
 
-    let player = new threeABN()
-                  .on("playing", render)
-                  .on("song_changed", render)
-                  .on("playend", () => Logger.log("Ended.", "warn"))
-                  .on("error", err => Logger.log(err, "error"))
-                  ;
+    if (interactive) {
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+        process.stdin.setEncoding("utf8");
+        process.stdin.on("data", key => {
+            if (key === "\u0003" || key.toLowerCase() === "q") { quit(); }
+            if (key.toLowerCase() === "l") {
+                player.likeCurrentSong(err => err ? Logger.log(err, "error") : render());
+            }
+        });
+    }
 
-    render();
+    process.on("SIGINT", () => quit());
+    process.on("SIGTERM", () => quit());
     cliResize(render);
+    render();
 });
-
-
