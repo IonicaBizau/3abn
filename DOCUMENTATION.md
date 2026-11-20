@@ -6,7 +6,6 @@ You can see below the API reference of this module.
 Streams audio from `3abn.org`.
 
 #### Params
-
 - **Object** `options`: An object containing the following fields:
  - `autoplay` (Boolean): Autoplays the radio (default: `true`).
  - `favorites_path` (String): The favorite songs file path (default: `~/3abn-favorites`).
@@ -21,13 +20,11 @@ Play the live stream.
 Get the playlist information.
 
 #### Params
-
 - **Function** `cb`: The callback function.
 
 ### `likeCurrentSong(cb)`
 Stores the current song name in the favorites list.
 
 #### Params
-
 - **Function** `cb`: The callback function.
 
